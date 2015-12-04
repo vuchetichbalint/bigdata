@@ -12,7 +12,7 @@ for line in sys.stdin:
         value = int(value)
         if key != lastkey:
             if lastkey is not None:
-                print '%s\t%d' % (lastkey, current)
+                print ('%s\t%d' % (lastkey, current))
             lastkey = key
             current = 0
         current += value
@@ -20,4 +20,4 @@ for line in sys.stdin:
         pass
 
 if lastkey is not None:
-    print '%s\t%d' % (lastkey,current)
+    print ('%s\t%d' % (lastkey,current))
