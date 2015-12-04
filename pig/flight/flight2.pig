@@ -8,13 +8,25 @@ fulldata = load '$INPUT' using PigStorage(',')
 
 
 -- throw away the unnecessary data
-data = FOREACH fulldata GENERATE Origin as Origin, Cancelled as Cancelled;
+dept = FOREACH fulldata GENERATE Origin as Origin, Cancelled as Cancelled;
 -- filter the flight is realy departed
-real_dept = FILTER fulldata BY Cancelled == 0;
+dept = FILTER dept BY Cancelled == 0;
 -- throw away the unnecessary data
-data = FOREACH real_dept GENERATE Origin as Origin;
+dept = FOREACH dept GENERATE Origin as Origin;
 --count the departs
-grp_dept = GROUP real_dept BY Origin;
-count_dept = FOREACH grp_dept GENERATE group as grp, COUNT(grp) as num;
+dept = GROUP dept BY Origin;
 
-STORE count_dept INTO '$OUTPUT'; -- USING PigStorage('\t','-schema');
+--count_dept = FOREACH dept GENERATE dept.Origin as name, COUNT(dept) as one;
+count_dept = FOREACH dept GENERATE COUNT(dept) as one;
+
+/*
+pairing = FOREACH fulldata GENERATE Origin as Origin, Dest as Dest;
+pairing = DISTINCT pairing;
+pairing = JOIN pairing as orig BY Origin OUTER pairing as dest BY Dest;
+pairing = FILTER pairing BY orig.Origin == NULL OR dest.Dest == NULL;
+
+pairing = JOIN pairing BY orig.Origin, count_dept BY
+*/
+
+
+STORE dept INTO '$OUTPUT'; -- USING PigStorage('\t','-schema');
