@@ -6,14 +6,9 @@ fulldata = load '$INPUT' USING PigStorage(',')
 		Cancelled:int,CancellationCode:chararray,Diverted:int,CarrierDelay:int,WeatherDelay:int,
 		NASDelay,SecurityDelay:int,LateAircraftDelay:int);
 
--- throw away the unnecessary data
-dept = FOREACH fulldata GENERATE Origin as orig, Cancelled as Cancelled;
--- filter the flight is really departed
-dept = FILTER dept BY Cancelled == 0;
--- throw away the unnecessary data
-dept = FOREACH dept GENERATE orig as orig;
---count the departs
-dept2 = GROUP dept BY orig;
-count_dept = FOREACH dept2 GENERATE group as name, COUNT(dept) as amount;
+pairing = FOREACH fulldata GENERATE Origin as orig, Dest as dest;
+pairing = DISTINCT pairing;
+pairing_grp = GROUP pairing ALL;
+pairing_count = FOREACH pairing_grp GENERATE COUNT(pairing);
 
-STORE count_dept INTO '$OUTPUT'; -- USING PigStorage('\t','-schema');
+STORE pairing_count INTO '$OUTPUT'; -- USING PigStorage('\t','-schema');
